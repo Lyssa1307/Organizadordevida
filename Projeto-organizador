@@ -1,0 +1,53 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const taskForm = document.getElementById('task-form');
+    const taskNameInput = document.getElementById('task-name');
+    const taskDurationInput = document.getElementById('task-duration');
+    const taskList = document.getElementById('task-list');
+    const totalTasksElem = document.getElementById('total-tasks');
+    const totalDurationElem = document.getElementById('total-duration');
+    
+    let tasks = [];
+    
+    function updateStats() {
+        const totalTasks = tasks.length;
+        const totalDuration = tasks.reduce((sum, task) => sum + task.duration, 0);
+        
+        totalTasksElem.textContent = totalTasks;
+        totalDurationElem.textContent = totalDuration;
+    }
+    
+    function renderTasks() {
+        taskList.innerHTML = '';
+        tasks.forEach((task, index) => {
+            const taskElem = document.createElement('div');
+            taskElem.className = 'task-item';
+            taskElem.innerHTML = `
+                <strong>${task.name}</strong>
+                <p>Duração: ${task.duration} horas</p>
+                <button onclick="removeTask(${index})">Remover</button>
+            `;
+            taskList.appendChild(taskElem);
+        });
+    }
+    
+    window.removeTask = function(index) {
+        tasks.splice(index, 1);
+        renderTasks();
+        updateStats();
+    }
+    
+    taskForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const name = taskNameInput.value;
+        const duration = parseFloat(taskDurationInput.value);
+        
+        if (name && !isNaN(duration)) {
+            tasks.push({ name, duration });
+            renderTasks();
+            updateStats();
+            
+            taskNameInput.value = '';
+            taskDurationInput.value = '';
+        }
+    });
+});
